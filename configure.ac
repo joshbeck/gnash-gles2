@@ -968,6 +968,12 @@ AC_ARG_ENABLE(renderer,
         build_ogl=no
         nrender=$((nrender+1))
         ;;
+      gles2|GLES2)
+        renderer_list="${renderer_list} opengles2"
+        build_gles2=yes
+        build_ogl=no
+        nrender=$((nrender+1))
+        ;;
       ovg|OVG|OpenVG|openvg)
         renderer_list="${renderer_list} openvg"
         build_ovg=yes
@@ -3355,6 +3361,23 @@ if test x"${build_gles1}" = x"yes"; then
   else
       PKG_ERR([No OpenGL-ES development package installed!])
       PKG_SUGGEST([You need to install the this from source probably])
+      DEB_INSTALL([libgles1-mesa-dev])
+      PKG_ALTERNATIVE([or use a different renderer with --enable-renderer=])
+  fi
+fi
+
+if test x"${build_gles2}" = x"yes"; then
+  if test x"${has_gles2}" = xyes; then
+    if test x"${GLES2_CFLAGS}" != x; then
+      echo "        OpenGLES2 flags are: ${GLES2_CFLAGS}"
+    else
+      echo "        OpenGLES2 flags are: default include path"
+    fi
+    echo "        OpenGLES2 libs are: ${GLES2_LIBS}"
+    else
+      PKG_REC([No OpenGL-ES2 development package installed!])
+      PKG_SUGGEST([You need to install the this from source probably])
+      DEB_INSTALL([libgles2-mesa-dev])
       PKG_ALTERNATIVE([or use a different renderer with --enable-renderer=])
   fi
 fi
