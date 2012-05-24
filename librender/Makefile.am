@@ -62,6 +62,7 @@ noinst_HEADERS = \
 	opengl/Renderer_ogl.h \
 	opengles1/Renderer_gles1.h \
 	opengles1/render_handler_gles.h \
+	opengles2/OpenGLES2Renderer.h \
 	openvg/OpenVGRenderer.h \
 	openvg/OpenVGBitmap.h \
 	openvg/OpenVGStyle.h \
@@ -114,6 +115,13 @@ libgnashrender_la_SOURCES += \
 libgnashrender_la_LIBADD += $(GLES1_LIBS)
 endif
 
+if BUILD_GLES2_RENDERER
+libgnashrender_la_SOURCES += \
+	opengles2/OpenGLES2Renderer.cpp \
+	opengles2/OpenGLES2Renderer.h
+libgnashrender_la_LIBADD += $(GLES2_LIBS)
+endif
+
 if  BUILD_CAIRO_RENDERER
 libgnashrender_la_SOURCES += \
 	cairo/Renderer_cairo.cpp \
@@ -155,6 +163,7 @@ testr_CPPFLAGS = \
 	$(EGL_CFLAGS) \
 	$(OPENVG_CFLAGS) \
 	$(GLES1_CFLAGS) \
+	$(GLES2_CFLAGS) \
 	$(DIRECTFB_CFLAGS)
 testr_LDADD = \
 	libgnashrender.la \
@@ -165,5 +174,6 @@ testr_LDADD = \
 	$(EGL_LIBS) \
 	$(GNASH_LIBS) \
 	$(OPENVG_LIBS) \
-	$(GLES1_LIBS)
+	$(GLES1_LIBS) \
+	$(GLES2_LIBS)
 endif

@@ -912,6 +912,8 @@ dnl compile anymore, it was all hardcoded into the framebuffer
 dnl code. This version compiles with the latest internal rendering
 dnl API, and works properly with the glue code for the Gnash GUIs.
 build_gles1=no
+dnl The OpenGLES2 renderer is also very incomplete
+build_gles2=no
 dnl OpenGL works, but suffers from performance and rendering quality
 dnl problems. This should eventually be replacd by the OpenGLES1 and
 dnl OpenVG renders.
@@ -962,7 +964,7 @@ AC_ARG_ENABLE(renderer,
         renderer_list="${renderer_list} opengl"
         build_ogl=yes
         ;;
-      gles|GLES|gles1|GLES1)
+      gles1|GLES1)
         renderer_list="${renderer_list} opengles1"
         build_gles1=yes
         build_ogl=no
@@ -2483,8 +2485,13 @@ AM_CONDITIONAL(NPAPI,   [test x"${npapi}" = xyes])
 AM_CONDITIONAL(KPARTS3, [test x"${build_kparts3}" = xyes])
 AM_CONDITIONAL(KPARTS4, [test x"${build_kparts4}" = xyes])
 
-if test x"${build_gles1}"; then
+if test x"${build_gles1}" = xyes -o x"${build_gles2}" = xyes; then
   GNASH_PATH_GLES
+fi
+
+dnl The OpenGLES1, OpenGLES2, and OpenVG all need the EGL support, X11 can use it also
+if test x"${build_gles1}" = xyes -o x"${build_gles2}" = xyes -o x"${build_ovg}" = xyes; then
+  build_egl_device=yes
 fi
 
 dnl only Linux supports /dev/fb0
