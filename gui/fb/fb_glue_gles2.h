@@ -44,12 +44,13 @@
 #endif
 
 #include "fbsup.h"
+#include "fb_glue.h"
 
 namespace gnash {
 
 namespace gui {
 
-class FBgles2Glue: public FBGlue // , public OglGlue
+class FBgles2Glue: public FBGlue
 {
 public:
     FBgles2Glue(int fd);

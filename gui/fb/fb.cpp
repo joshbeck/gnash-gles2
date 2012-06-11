@@ -128,6 +128,10 @@
 # include "fb_glue_gles1.h"
 #endif
 
+#ifdef RENDERER_GLES2
+# include "fb_glue_gles2.h"
+#endif
+
 namespace gnash {
 
 namespace gui {
@@ -207,6 +211,25 @@ FBGui::init(int argc, char *** argv)
     }
 #endif
 
+#ifdef RENDERER_GLES2
+    if ((renderer == "gles2") || renderer.empty()) {
+        renderer = "gles2";
+        // _glue.reset(new FBgles2Glue(0));
+        // Initialize the glue layer between the renderer and the gui toolkit
+        _glue->init(argc, argv);
+
+        FBgles2Glue *ogl2 = reinterpret_cast<FBgles2Glue *>(_glue.get());
+        // Set "window" size
+        _width  = ogl2->getWidth();
+        _height = ogl2->getHeight();
+        log_debug("Width:%d, Height:%d", _width, _height);
+        // _renderer.reset(renderer::openvg::create_handler(0));
+        // renderer::openvg::Renderer_ovg *rend = reinterpret_cast
+        //     <renderer::openvg::Renderer_ovg *>(_renderer.get());
+        // rend->init(_width, _height);
+    }
+#endif
+
     // map framebuffer into memory
     // Create a new Glue layer
 #ifdef RENDERER_AGG
@@ -217,6 +240,7 @@ FBGui::init(int argc, char *** argv)
         _glue.reset(new FBAggGlue());
         // Initialize the glue layer between the renderer and the gui toolkit
         _glue->init(argc, argv);
+
         FBAggGlue *agg = reinterpret_cast<FBAggGlue *>(_glue.get());
         // Set "window" size
         _width =  agg->width();
