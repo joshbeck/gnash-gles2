@@ -50,6 +50,10 @@
 #include "gtk_glue_ovg.h"
 #endif
 
+#ifdef RENDERER_GLES2
+#include "gtk_glue_gles2.h"
+#endif
+
 // AGG support, which is the default, for rendering in the canvas.
 #include "gtk_glue_agg.h"
 
@@ -216,6 +220,8 @@ gnash_canvas_setup(GnashCanvas *canvas, std::string& hwaccel,
         renderer = "opengl";
 #elif defined (RENDERER_OPENVG)
         renderer = "openvg";
+#elif defined (RENDERER_GLES2)
+        renderer = "gles2";
 #endif
     }
 
@@ -256,6 +262,16 @@ gnash_canvas_setup(GnashCanvas *canvas, std::string& hwaccel,
 	renderer = "openvg";
 #ifdef RENDERER_OPENVG
         canvas->glue.reset(new gnash::gui::GtkOvgGlue);
+#else
+        boost::format fmt = boost::format("Support for renderer %1% "
+                " was not built") % renderer;
+        throw gnash::GnashException(fmt.str());
+#endif
+    }
+    else if ((renderer == "opengles2") || (renderer == "gles2")) {
+	renderer = "gles2";
+#ifdef RENDERER_GLES2
+        canvas->glue.reset(new gnash::gui::GtkGles2Glue);
 #else
         boost::format fmt = boost::format("Support for renderer %1% "
                 " was not built") % renderer;
