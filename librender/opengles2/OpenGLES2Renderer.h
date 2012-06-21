@@ -44,7 +44,6 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-//#include "openvg/OpenVGBitmap.h"
 #include "egl/eglDevice.h"
 
 namespace gnash {

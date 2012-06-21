@@ -271,7 +271,7 @@ gnash_canvas_setup(GnashCanvas *canvas, std::string& hwaccel,
     else if ((renderer == "opengles2") || (renderer == "gles2")) {
 	renderer = "gles2";
 #ifdef RENDERER_GLES2
-        canvas->glue.reset(new gnash::gui::GtkGles2Glue);
+        canvas->glue.reset(new gnash::gui::Gtkgles2Glue);
 #else
         boost::format fmt = boost::format("Support for renderer %1% "
                 " was not built") % renderer;

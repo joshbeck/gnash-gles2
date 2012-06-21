@@ -63,7 +63,7 @@ public:
     // Prepare the drawing area for the renderer
     virtual void prepDrawingArea(FbWidget *drawing_area) = 0;
     virtual Renderer* createRenderHandler() = 0;
-    virtual void setRenderHandlerSize(int /*width*/, int /*height*/) {}
+    virtual void setRenderHandlerSize(int /*width*/, int /*height*/) {};
     virtual void setInvalidatedRegions(const InvalidatedRanges &/* ranges */) {};
     
     virtual void render() = 0;

@@ -39,8 +39,6 @@
 #include "Range2d.h"
 #include "SWFCxForm.h"
 #include "opengles2/OpenGLES2Renderer.h"
-//#include "openvg/OpenVGBitmap.h"
-//#include "openvg/OpenVGStyle.h"
 #include "SWFMatrix.h"
 #include "swf/ShapeRecord.h"
 #include "CachedBitmap.h"

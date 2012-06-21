@@ -45,7 +45,7 @@ namespace gnash {
 
 namespace gui {
 
-GtkGles2Glue::GtkGles2Glue()
+Gtkgles2Glue::Gtkgles2Glue()
 :   _offscreenbuf(0),
     _bpp(32),
     _width(0),
@@ -54,7 +54,7 @@ GtkGles2Glue::GtkGles2Glue()
     GNASH_REPORT_FUNCTION;
 }
 
-GtkGles2Glue::~GtkGles2Glue()
+Gtkgles2Glue::~Gtkgles2Glue()
 {
     GNASH_REPORT_FUNCTION;
 
@@ -67,7 +67,7 @@ GtkGles2Glue::~GtkGles2Glue()
 }
 
 bool
-GtkGles2Glue::init(int /*argc*/, char ** /*argv*/[])
+Gtkgles2Glue::init(int /*argc*/, char ** /*argv*/[])
 {
     GNASH_REPORT_FUNCTION;
     
@@ -126,7 +126,7 @@ GtkGles2Glue::init(int /*argc*/, char ** /*argv*/[])
 }
 
 void
-GtkGles2Glue::prepDrawingArea(GtkWidget *drawing_area)
+Gtkgles2Glue::prepDrawingArea(GtkWidget *drawing_area)
 {
     GNASH_REPORT_FUNCTION;
 
@@ -159,7 +159,7 @@ GtkGles2Glue::prepDrawingArea(GtkWidget *drawing_area)
 }
 
 Renderer*
-GtkGles2Glue::createRenderHandler()
+Gtkgles2Glue::createRenderHandler()
 {
     GNASH_REPORT_FUNCTION;
 
@@ -185,7 +185,7 @@ GtkGles2Glue::createRenderHandler()
 }
 
 void
-GtkGles2Glue::setRenderHandlerSize(int width, int height)
+Gtkgles2Glue::setRenderHandlerSize(int width, int height)
 {
     GNASH_REPORT_FUNCTION;
 
@@ -231,7 +231,7 @@ GtkGles2Glue::setRenderHandlerSize(int width, int height)
 }
 
 void 
-GtkGles2Glue::beforeRendering()
+Gtkgles2Glue::beforeRendering(movie_root* dummy)
 {
     GNASH_REPORT_FUNCTION;
 
@@ -243,7 +243,7 @@ GtkGles2Glue::beforeRendering()
 }
 
 void
-GtkGles2Glue::render()
+Gtkgles2Glue::render()
 {
     GNASH_REPORT_FUNCTION;
 
@@ -271,7 +271,7 @@ GtkGles2Glue::render()
 }
 
 void
-GtkGles2Glue::render(int /* minx */, int /* miny */, int /* maxx */, int /* maxy */)
+Gtkgles2Glue::render(int /* minx */, int /* miny */, int /* maxx */, int /* maxy */)
 {
     GNASH_REPORT_FUNCTION;
 
@@ -297,7 +297,7 @@ GtkGles2Glue::render(int /* minx */, int /* miny */, int /* maxx */, int /* maxy
 }
 
 void
-GtkGles2Glue::configure(GtkWidget *const /*widget*/, GdkEventConfigure *const event)
+Gtkgles2Glue::configure(GtkWidget *const /*widget*/, GdkEventConfigure *const event)
 {
     GNASH_REPORT_FUNCTION;
 
@@ -306,7 +306,7 @@ GtkGles2Glue::configure(GtkWidget *const /*widget*/, GdkEventConfigure *const ev
 
 #if 0
 bool
-GtkGles2Glue::checkEGLConfig(EGLConfig config)
+Gtkgles2Glue::checkEGLConfig(EGLConfig config)
 {
     // GNASH_REPORT_FUNCTION;
     
@@ -370,7 +370,7 @@ GtkGles2Glue::checkEGLConfig(EGLConfig config)
 
 /// Query the system for all supported configs
 int
-GtkGles2Glue::queryEGLConfig(EGLDisplay display)
+Gtkgles2Glue::queryEGLConfig(EGLDisplay display)
 {
      GNASH_REPORT_FUNCTION;
      EGLConfig *configs = 0;

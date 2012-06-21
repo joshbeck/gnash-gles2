@@ -41,11 +41,11 @@ namespace gnash {
 
 namespace gui {
 
-class GtkGles2Glue : public GtkGlue
+class Gtkgles2Glue : public GtkGlue
 {
   public:
-    GtkGles2Glue();
-    ~GtkGles2Glue();
+    Gtkgles2Glue();
+    ~Gtkgles2Glue();
 
     // Initialize EGL
     bool init(int argc, char **argv[]);
@@ -58,7 +58,7 @@ class GtkGles2Glue : public GtkGlue
 
     // Set the size of the rendering window
     void setRenderHandlerSize(int width, int height);
-    void beforeRendering();
+    void beforeRendering(movie_root*);
 
     void configure(GtkWidget *const widget, GdkEventConfigure *const event);
 

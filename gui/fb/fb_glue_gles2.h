@@ -57,9 +57,9 @@ public:
     virtual ~FBgles2Glue();
     
     virtual bool init(int /*argc*/, char *** /*argv*/);
-    
+
+    virtual void prepDrawingArea(FbWidget *drawing_area);    
     virtual Renderer* createRenderHandler();
-    virtual void setInvalidatedRegions(const InvalidatedRanges& /* ranges */) {}
     
     virtual int width ();
     virtual int height ();

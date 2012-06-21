@@ -87,5 +87,14 @@ gtk_gnash_LDADD += \
 
 endif	# BUILD_CAIRO_RENDERER
 
+# This supports only OpenGLES 2 with EGL support.
+if BUILD_GLES2_RENDERER
+gtk_gnash_CPPFLAGS += $(GLES2_CFLAGS) $(EGL_CFLAGS)
+gtk_gnash_SOURCES += gtk/gtk_glue_gles2.cpp gtk/gtk_glue_gles2.h 
+gtk_gnash_LDADD += \
+	$(GLES2_LIBS) \
+	$(EGL_LIBS)
+endif	#BUILD_GLES2_RENDERER
+
 endif	# BUILD_GTK_GUI
 

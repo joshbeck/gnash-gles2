@@ -63,6 +63,11 @@ FBgles2Glue::init(int /*argc*/, char *** /*argv*/)
     return false;
 }
 
+void
+prepDrawingArea(FbWidget *drawing_area)
+{
+}
+
 Renderer*
 FBgles2Glue::createRenderHandler()
 {
