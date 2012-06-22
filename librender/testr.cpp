@@ -65,7 +65,7 @@
 #include "opengles1/Renderer_gles1.h"
 #endif
 #ifdef RENDERER_GLES2
-#include "opengles2/Renderer_gles2.h"
+#include "opengles2/OpenGLES2Renderer.h"
 #endif
 #ifdef RENDERER_CAIRO
 #include "cairo/Renderer_cairo.h"
@@ -439,13 +439,12 @@ test_renderer(Renderer *renderer, const std::string &type)
 #endif
     runtest.untested("drawVideoFrame()");
 
-    point *corners = 0;
-    size_t corner_count = 0;
+    std::vector<point> corners;
     rgba fill(0, 0, 0, 255);;
     rgba outline(0, 0, 0, 255);;
     bool masked = true;
     Timer tdrawpoly("drawPoly");
-    renderer->draw_poly(corners, corner_count, fill, outline, mat, masked);
+    renderer->draw_poly(corners, fill, outline, mat, masked);
     tdrawpoly.stop();
     runtest.unresolved(std::string("drawPoly() ") + tdrawpoly.elapsed());
     
@@ -540,34 +539,14 @@ test_geometry(Renderer *renderer, const std::string &type)
     } else {
         runtest.fail(std::string("world_to_pixel(geometry::Range2d<int>) ") + twtop.elapsed());
     }
-    
-    SWFRect bounds;
-    Timer tbounds1("bounds_in_clipping_area(SWFRect)");
-    bool ret = renderer->bounds_in_clipping_area(bounds);
-    tbounds1.stop();
-    if (ret) {
-        runtest.pass(std::string("bounds_in_clipping_area(SWFRect) ") + tbounds1.elapsed());
-    } else {
-        runtest.fail(std::string("bounds_in_clipping_area(SWFRect) ") + tbounds1.elapsed());
-    }
-    
-    InvalidatedRanges ranges;
-    Timer tbounds2("bounds_in_clipping_area(InvalidatedRanges)");
-    ret = renderer->bounds_in_clipping_area(ranges);
-    tbounds2.stop();
-    if (!ret) {
-        runtest.pass(std::string("bounds_in_clipping_area(InvalidatedRanges) ") + tbounds2.elapsed());
-    } else {
-        runtest.fail(std::string("bounds_in_clipping_area(InvalidatedRanges) ") + tbounds2.elapsed());
-    }
 
-    Timer tbounds3("bounds_in_clipping_area(geometry::Range2d<int>)");
-    ret = renderer->bounds_in_clipping_area(pixelbounds);
-    tbounds3.stop();
+    Timer tbounds("bounds_in_clipping_area(geometry::Range2d<int>)");
+    bool ret = renderer->bounds_in_clipping_area(pixelbounds);
+    tbounds.stop();
     if (!ret) {
-        runtest.pass(std::string("bounds_in_clipping_area(geometry::Range2d<int>) ") + tbounds3.elapsed());
+        runtest.pass(std::string("bounds_in_clipping_area(geometry::Range2d<int>) ") + tbounds.elapsed());
     } else {
-        runtest.fail(std::string("bounds_in_clipping_area(geometry::Range2d<int>) ") + tbounds3.elapsed());
+        runtest.fail(std::string("bounds_in_clipping_area(geometry::Range2d<int>) ") + tbounds.elapsed());
     }
 }
 
@@ -584,8 +563,8 @@ test_iterators(Renderer *renderer, const std::string &type)
         return;
     }
 
-    Renderer::RenderImages::iterator fit = renderer->getFirstRenderImage();
-    Renderer::RenderImages::iterator lit = renderer->getLastRenderImage();
+    Renderer::RenderImages::const_iterator fit = renderer->getFirstRenderImage();
+    Renderer::RenderImages::const_iterator lit = renderer->getLastRenderImage();
     // When there are no images, the first and last are the same obviously
     if (fit == lit) {
          runtest.pass("getFirstRenderImage()");

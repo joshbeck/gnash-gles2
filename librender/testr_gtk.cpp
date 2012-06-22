@@ -52,7 +52,7 @@
 # include "opengles1/Renderer_gles1.h"
 #endif
 # ifdef RENDERER_GLES2
-#  include "opengles2/Renderer_gles2.h"
+#  include "opengles2/OpenGLES2Renderer.h"
 # endif
 #ifdef RENDERER_CAIRO
 # include "cairo/Renderer_cairo.h"
