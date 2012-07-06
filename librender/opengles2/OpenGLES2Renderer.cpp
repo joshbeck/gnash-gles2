@@ -24,6 +24,7 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+#include <fstream>
 #include <boost/utility.hpp>
 #include <boost/bind.hpp>
 
@@ -51,7 +52,7 @@
 #define  MAX_POINTS (4096)
 
 /// \file Renderer_gles2.cpp
-/// \brief The OpenVG renderer and related code.
+/// \brief The OpenGLES2 renderer and related code.
 ///
 
 static const int TwipsPerInch = 1440;
@@ -183,14 +184,30 @@ Renderer_gles2::init(float x, float y)
 {
     // GNASH_REPORT_FUNCTION;
 
-    log_unimpl(_("init"));
+    // Read in and compile shaders
+    // TODO: Save compiled shader binaries and load them on subsequent
+    // runs of the program, and only recompile shaders if shader source
+    // is newer than the binary
+    GLuint vGrad, fGrad, vTex, fTex;
+    vGrad = create_shader("~/programs/gnash-git/librender/shaders/gradient.v.glsl",
+        GL_VERTEX_SHADER);
+    fGrad = create_shader("~/programs/gnash-git/librender/shaders/gradient.f.glsl",
+        GL_FRAGMENT_SHADER);
+    _gradient_prog = create_program(vGrad, fGrad);
+    vTex = create_shader("~/programs/gnash-git/librender/shaders/texture.v.glsl",
+        GL_VERTEX_SHADER);
+    fTex = create_shader("~/programs/gnash-git/librender/shaders/texture.f.glsl",
+        GL_FRAGMENT_SHADER);
+    _texture_prog = create_program(vTex, fTex);
+    
 }
 
 Renderer_gles2::~Renderer_gles2()
 {
     // GNASH_REPORT_FUNCTION;
 
-    log_unimpl(_("~Renderer_gles2"));
+    glDeleteProgram(_gradient_prog);
+    glDeleteProgram(_texture_prog);
 }
 
 // Given an image, returns a pointer to a CachedBitmap class
@@ -274,6 +291,130 @@ Renderer_gles2::pixel_to_world(int x, int y) const
     mat.invert().transform(p);
     return p;
 }
+
+/// Compile the shader from file 'filename', with error handling
+GLuint
+Renderer_gles2::create_shader(const char* filename, GLenum type)
+{
+    std::ifstream shaderFile(filename, std::ifstream::in | std::ifstream::ate);
+    if(!shaderFile.good()) {
+        log_error(_("Could not open shader source at %s"), filename);
+    }
+    int shaderLength = shaderFile.tellg();
+    shaderFile.seekg(0, std::ifstream::beg);
+    shaderFile.clear();
+    char* shaderCString = new char[shaderLength+1];
+    shaderFile.read(shaderCString, shaderLength);
+    shaderCString[shaderLength+1] = 0; // add null at end
+    shaderFile.close();
+
+    GLuint res = glCreateShader(type);
+    glShaderSource(res, 1, const_cast<const char**>(&shaderCString), 0);
+    delete[] shaderCString;
+     
+    glCompileShader(res);
+    GLint compile_ok = GL_FALSE;
+    glGetShaderiv(res, GL_COMPILE_STATUS, &compile_ok);
+
+    if (compile_ok == GL_FALSE) {
+        GLint log_length = 0;
+        glGetShaderiv(res, GL_INFO_LOG_LENGTH, &log_length);
+        char* log = new char[log_length];
+        glGetShaderInfoLog(res, log_length, NULL, log);
+        log_error(_("in %s: %s"), filename, log);
+        delete[] log; 
+        glDeleteShader(res);
+        return 0;
+    }
+
+    return res;
+}
+
+GLuint
+create_program(GLuint vertex_shader, GLuint fragment_shader)
+{
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+    
+    GLint program_ok = GL_FALSE;
+    glGetProgramiv(program, GL_LINK_STATUS, &program_ok);
+
+    if (program_ok == GL_FALSE) {
+        GLint log_length = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_length);
+        char* log = new char[log_length];
+        glGetProgramInfoLog(program, log_length, NULL, log);
+        log_error(_("Failed to link shader program: %s"), log);
+        delete[] log; 
+        glDeleteProgram(program);
+        return 0;
+    }
+
+    return program;
+}
+
+#if 0
+// Unfortunately, we can't use OpenGLES2 as-is to interpolate the curve for us. It
+// is legal for Flash coordinates to be outside of the viewport, which will
+// be ignored by OpenGLES2's feedback mode. Feedback mode
+// will simply not return those coordinates, which will destroy a shape which
+// is partly off-screen.
+
+// So, if we transform the coordinates to be always positive, it should be
+// possible to use evaluators. This then presents another problem: what if
+// one coordinate is negative and the other is not, and what if both of
+// those are outside of the viewport?
+
+// one solution would be to use feedback mode unless one of the coordinates
+// is outside of the viewport.
+void trace_curve(const point& startP, const point& controlP,
+                  const point& endP, std::vector<gles2Vertex>& coords)
+{
+  // Midpoint on line between two endpoints.
+  point mid = middle(startP, endP);
+
+  // Midpoint on the curve.
+  point q = middle(mid, controlP);
+
+  if (mid.distance(q) < 0.1 /*error tolerance*/) {
+    coords.push_back(oglVertex(endP));
+  } else {
+    // Error is too large; subdivide.
+    trace_curve(startP, middle(startP, controlP), q, coords);
+
+    trace_curve(q, middle(controlP, endP), endP, coords);
+  }
+}
+
+std::vector<gles2Vertex> interpolate(const std::vector<Edge>& edges,
+        const float& anchor_x, const float& anchor_y)
+{
+  point anchor(anchor_x, anchor_y);
+  
+  std::vector<oglVertex> shape_points;
+  shape_points.push_back(oglVertex(anchor));
+  
+  for (std::vector<Edge>::const_iterator it = edges.begin(), end = edges.end();
+        it != end; ++it) {
+      const Edge& the_edge = *it;
+      
+      point target(the_edge.ap.x, the_edge.ap.y);
+
+      if (the_edge.straight()) {
+        shape_points.push_back(oglVertex(target));
+      } else {
+        point control(the_edge.cp.x, the_edge.cp.y);
+        
+        trace_curve(anchor, control, target, shape_points);
+      }
+      anchor = target;
+  }
+  
+  return shape_points;  
+}
+#endif
 
 /// Setup the renderer to display by setting the Matrix for scaling,
 /// shearing, and transformations.

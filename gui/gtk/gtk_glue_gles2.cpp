@@ -151,11 +151,9 @@ Gtkgles2Glue::prepDrawingArea(GtkWidget *drawing_area)
 
     //vgLoadIdentity();
 
-#if 0
     renderer::EGLDevice *egl = (renderer::EGLDevice*)_device.get();
     egl->printEGLSurface(eglGetCurrentSurface(EGL_DRAW));
     egl->printEGLContext(eglGetCurrentContext());
-#endif
 }
 
 Renderer*

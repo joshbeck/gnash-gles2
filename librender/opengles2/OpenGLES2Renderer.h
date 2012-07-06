@@ -84,6 +84,9 @@ public:
     
     gnash::point pixel_to_world(int, int) const;
 
+    GLuint create_shader(const char* filename, GLenum type);
+    GLuint create_program(GLuint vertex_shader, GLuint fragment_shader);
+
     // Called by movie_root::display()
     void begin_display(const gnash::rgba&, int, int, float,
                        float, float, float);
@@ -171,16 +174,9 @@ public:
   
     std::vector<PathVec> _masks;
     bool        _drawing_mask;
-#ifdef OPENVG_VERSION_1_1
-//    VGMaskLayer _mask_layer;
-#endif
+    GLuint      _gradient_prog; // used for flat and gradient tris
+    GLuint      _texture_prog;  // used for textured tris and bitmaps
     gnash::SWFMatrix stage_matrix;  // conversion from TWIPS to pixels
-    
-    /// this paint object is used for solid, gradient, and pattern fills.
-//    VGPaint     _fillpaint;
-
-    /// this pain object is used for paths
-//    VGPaint     _strokepaint;
 
     /// This stores the Aspect Ratio, which is required to properly
     /// set the X axis scale. This is usually represented as 4:3 or
@@ -205,7 +201,7 @@ public:
 
 DSOEXPORT Renderer* create_handler(const char *pixelformat);
 
-} // namespace gnash::renderer::opengles2
+} // namespace gnash::renderer::gles2
 } // namespace gnash::renderer
 } // namespace gnash
 
